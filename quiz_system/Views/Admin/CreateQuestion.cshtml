@@ -1,0 +1,44 @@
+﻿@model Question
+
+<h2>Create New Question</h2>
+
+<form asp-action="CreateQuestion" method="post">
+    <input type="hidden" name="SectionId" value="@Model.SectionId" />
+
+    <div class="form-group">
+        <label for="QuestionText">Question</label>
+        <input type="text" class="form-control" id="QuestionText" name="QuestionText" value="@Model.QuestionText" required />
+    </div>
+
+    <div class="form-group">
+        <label for="OptionA">Option A</label>
+        <input type="text" class="form-control" id="OptionA" name="OptionA" value="@Model.OptionA" required />
+    </div>
+
+    <div class="form-group">
+        <label for="OptionB">Option B</label>
+        <input type="text" class="form-control" id="OptionB" name="OptionB" value="@Model.OptionB" required />
+    </div>
+
+    <div class="form-group">
+        <label for="OptionC">Option C</label>
+        <input type="text" class="form-control" id="OptionC" name="OptionC" value="@Model.OptionC" required />
+    </div>
+
+    <div class="form-group">
+        <label for="OptionD">Option D</label>
+        <input type="text" class="form-control" id="OptionD" name="OptionD" value="@Model.OptionD" required />
+    </div>
+
+    <div class="form-group">
+        <label for="CorrectAnswer">Correct Answer</label>
+        <select class="form-control" id="CorrectAnswer" name="CorrectAnswer" required>
+            <option value="OptionA" selected=@(Model.CorrectAnswer == "OptionA" ? "selected" : "")>Option A</option>
+            <option value="OptionB" selected=@(Model.CorrectAnswer == "OptionB" ? "selected" : "")>Option B</option>
+            <option value="OptionC" selected=@(Model.CorrectAnswer == "OptionC" ? "selected" : "")>Option C</option>
+            <option value="OptionD" selected=@(Model.CorrectAnswer == "OptionD" ? "selected" : "")>Option D</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Question</button>
+</form>

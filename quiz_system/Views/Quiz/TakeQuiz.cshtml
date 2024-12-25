@@ -1,0 +1,37 @@
+﻿@model QuizViewModel
+
+<h2>@Model.Section.Name - Question</h2>
+
+@if (Model.Question != null)
+{
+    <form method="post" action="@Url.Action("NextQuestion", "Quiz")">
+        <input type="hidden" name="sectionId" value="@Model.SectionId" />
+        <input type="hidden" name="questionId" value="@Model.Question.Id" />
+
+        <div class="form-group">
+            <label>@Model.Question.QuestionText</label>
+            <div>
+                <input type="radio" name="selectedAnswer" value="OptionA" /> @Model.Question.OptionA
+            </div>
+            <div>
+                <input type="radio" name="selectedAnswer" value="OptionB" /> @Model.Question.OptionB
+            </div>
+            <div>
+                <input type="radio" name="selectedAnswer" value="OptionC" /> @Model.Question.OptionC
+            </div>
+            <div>
+                <input type="radio" name="selectedAnswer" value="OptionD" /> @Model.Question.OptionD
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Next Question</button>
+
+        <p>Time Left: @Model.TimeLimitInMinutes minutes</p>
+    </form>
+}
+else
+{
+    <p>Question not found or already answered.</p>
+}
+
+

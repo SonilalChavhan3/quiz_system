@@ -1,0 +1,43 @@
+﻿@model IEnumerable<UserQuizResult>
+
+<h2>Quiz Result</h2>
+
+<p><strong>Username:</strong> @ViewBag.UserName</p>
+<p><strong>Total Questions:</strong> @ViewBag.TotalQuestions</p>
+<p><strong>Correct Answers:</strong> @ViewBag.CorrectAnswers</p>
+
+@if (ViewBag.CorrectAnswers == ViewBag.TotalQuestions)
+{
+    <p style="color:green;">Congratulations! You got all the answers right.</p>
+}
+else
+{
+    <p style="color:red;">Better luck next time!</p>
+}
+
+<a href="@Url.Action("EnterName", "User")" class="btn btn-primary">Try Again</a>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Question</th>
+            <th>Your Answer</th>
+            <th>Correct Answer</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <td>@result.QuestionText</td>
+                <td>@result.SelectedAnswer</td>
+                <td>@result.CorrectAnswer</td>
+                <td>@(result.IsCorrect ? "Correct" : "Incorrect")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("EnterName", "User")" class="btn btn-primary">Try Again</a>

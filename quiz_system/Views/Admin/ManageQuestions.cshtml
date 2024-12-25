@@ -1,0 +1,26 @@
+﻿@model Section
+
+<h2>Manage Questions for @Model.Name</h2>
+
+<a href="@Url.Action("CreateQuestion", "Admin", new { sectionId = Model.Id })" class="btn btn-success">Add New Question</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Question Text</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var question in Model.Questions)
+        {
+            <tr>
+                <td>@question.QuestionText</td>
+                <td>
+                    <a href="@Url.Action("EditQuestion", "Admin", new { id = question.Id })" class="btn btn-warning">Edit</a>
+                    <a href="@Url.Action("DeleteQuestion", "Admin", new { id = question.Id })" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

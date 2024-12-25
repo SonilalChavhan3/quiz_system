@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Section>
+
+<h2>Manage Sections</h2>
+
+<a href="@Url.Action("CreateSection", "Admin")" class="btn btn-success">Create New Section</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Section Name</th>
+            <th>Time Limit (Minutes)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sections in Model)
+        {
+            <tr>
+                <td>@sections.Name</td>
+                <td>@sections.TimeLimitInMinutes</td>
+                <td>
+                    <a href="@Url.Action("EditSection", "Admin", new { id = sections.Id })" class="btn btn-warning">Edit</a>
+                    <a href="@Url.Action("DeleteSection", "Admin", new { id = sections.Id })" class="btn btn-danger">Delete</a>
+                    <a href="@Url.Action("ManageQuestions", "Admin", new { sectionId = sections.Id })" class="btn btn-info">Manage Questions</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

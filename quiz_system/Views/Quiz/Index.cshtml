@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Section>
+
+<h2>Available Sections</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Section</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sections in Model)
+        {
+            <tr>
+                <td>@sections.Name</td>
+                <td>
+                    <a href="@Url.Action("TakeQuiz", "Quiz", new { sectionId = sections.Id })" class="btn btn-primary">Start Quiz</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

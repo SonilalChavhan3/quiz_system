@@ -150,5 +150,45 @@ namespace quiz_system.Controllers
 
 
         }
+
+        public IActionResult UserQuizResults()
+        {
+            var userId = _userManager.GetUserId(User); // Get the authenticated user's ID
+
+            // Fetch all the quiz attempts for the authenticated user
+            var quizAttempts = _context.QuizAttempts
+                .Where(qa => qa.UserId == userId)
+                .Include(qa => qa.Section) // Include section data (optional but useful for displaying section name)
+                .Include(qa => qa.UserQuizResults) // Include related quiz results for each attempt
+                .OrderByDescending(qa => qa.AttemptedAt) // Order by date descending
+                .ToList();
+
+            if (quizAttempts == null || !quizAttempts.Any())
+            {
+                // Handle the case where no quiz attempts are found
+                TempData["Message"] = "No quiz results found.";
+                return View();
+            }
+
+            return View(quizAttempts);
+        }
+
+        public IActionResult VievQuizResult(int sectionId, int attempId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var attempt = _context.QuizAttempts
+                .Include(a => a.Section.Questions)
+                .Include(a => a.UserQuizResults)
+                .FirstOrDefault(a => a.UserId == userId && a.SectionId == sectionId && a.Id == attempId);
+
+            if (attempt == null)
+            {
+                return NotFound();
+            }
+
+            // Pass the attempt and results to the view
+            return View(attempt);
+        }
+
     }
 }

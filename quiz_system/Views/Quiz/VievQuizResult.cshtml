@@ -1,0 +1,125 @@
+﻿@* @model QuizAttempt
+
+<div class="container mt-5">
+    <h2>Quiz Results - @Model.Section.Name</h2>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Attempted On: @Model.AttemptedAt.ToString("yyyy-MM-dd HH:mm:ss")</h4>
+            <h4>Total Questions: @Model.Section.Questions.Count()</h4>
+            <h4>Correct Answers: @Model.UserQuizResults.Count(r => r.IsCorrect)</h4>
+
+            @if (Model.UserQuizResults.Count() == Model.Section.Questions.Count())
+            {
+                <p class="text-success">Congratulations! You completed the quiz.</p>
+            }
+            else
+            {
+                <p class="text-warning">The quiz is still in progress.</p>
+            }
+        </div>
+    </div>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Question</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var result in Model.UserQuizResults)
+                {
+                    <tr>
+                        <td>@(Model.UserQuizResults.ToList().IndexOf(result) + 1)</td>
+                        <td>@result.QuestionText</td>
+                        <td>@result.SelectedAnswer</td>
+                        <td>@result.CorrectAnswer</td>
+                        <td>
+                            @if (result.IsCorrect)
+                            {
+                                <span class="badge badge-success">Correct</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Incorrect</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="@Url.Action("Index", "Quiz")" class="btn btn-primary">Back to Quiz List</a>
+        <a href="@Url.Action("UserQuizResults", "Quiz")" class="btn btn-secondary">View All Results</a>
+    </div>
+</div> *@
+
+@model QuizAttempt
+
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Quiz Result - @Model.Section.Name</h2>
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <p><strong>Attempted On:</strong> @Model.AttemptedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                <p><strong>Total Questions Attempted:</strong> @Model.UserQuizResults.Count()</p>
+                <p><strong>Correct Answers:</strong> @Model.UserQuizResults.Count(r => r.IsCorrect)</p>
+                @if(@Model.UserQuizResults.Count(r => r.IsCorrect) == @Model.Section.Questions.Count())
+                {
+                    <p class="text-success font-weight-bold">🎉 Congratulations! You got all the answers right.</p>
+                }
+                else
+                {
+                    <p class="text-danger font-weight-bold">❌ Better luck next time!</p>
+                }
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Question</th>
+                            <th>Your Answer</th>
+                            <th>Correct Answer</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var result in Model.UserQuizResults)
+                        {
+                            <tr>
+                                <td>@result.QuestionText</td>
+                                <td>@result.SelectedAnswer</td>
+                                <td>@result.CorrectAnswer</td>
+                                <td class="text-center">
+                                    @if (result.IsCorrect)
+                                    {
+                                        <span class="text-success-emphasis">✔ Correct</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger-emphasis">✘ Incorrect</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Quiz")" class="btn btn-primary">Try Again</a>
+            <a href="@Url.Action("UserQuizResults", "Quiz")" class="btn btn-secondary">View All Results</a>
+        </div>
+    </div>
+</div>
+

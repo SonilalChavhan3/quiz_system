@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quiz_system.Models;
+using quiz_system.Models.QuizModel;
 using static System.Collections.Specialized.BitVector32;
 
 namespace quiz_system.Controllers
@@ -8,10 +10,11 @@ namespace quiz_system.Controllers
     public class QuizController : Controller
     {
         private readonly QuizContext _context;
-
-        public QuizController(QuizContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public QuizController(QuizContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // Action to display the available sections (topics)
@@ -24,20 +27,24 @@ namespace quiz_system.Controllers
         // Action to take a quiz from a section
         public IActionResult TakeQuiz(int sectionId)
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("EnterName","User");
-            }
+            var userId = _userManager.GetUserId(User);
+
             var section = _context.Sections.Include(s => s.Questions).FirstOrDefault(s => s.Id == sectionId);
             if (section == null)
             {
                 return NotFound();
             }
 
-            if (section.Questions.Count!= 0)
+            if (section.Questions.Count != 0)
             {
-
+                var newAttempt = new QuizAttempt
+                {
+                    UserId = userId,
+                    SectionId = sectionId,
+                    AttemptedAt = DateTime.UtcNow
+                };
+                _context.QuizAttempts.Add(newAttempt);
+                _context.SaveChanges();
                 // Load the first question of the section
                 var question = section.Questions.First();
                 QuizViewModel quizViewModel = new QuizViewModel();
@@ -45,6 +52,8 @@ namespace quiz_system.Controllers
                 quizViewModel.Question = question;
                 quizViewModel.TimeLimitInMinutes = section.TimeLimitInMinutes;
                 quizViewModel.Section = section;
+                quizViewModel.CurrentQuestionNumber = 1;
+                quizViewModel.TotalQuestions = section.Questions.Count;
 
                 return View(quizViewModel);
 
@@ -60,18 +69,20 @@ namespace quiz_system.Controllers
         [HttpPost]
         public IActionResult NextQuestion(int sectionId, int questionId, string selectedAnswer)
         {
-            var userName = HttpContext.Session.GetString("UserName");
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("EnterName");
-            }
+            var userId = _userManager.GetUserId(User);
             var section = _context.Sections.Include(s => s.Questions).FirstOrDefault(s => s.Id == sectionId);
             var question = section.Questions.FirstOrDefault(q => q.Id == questionId);
 
+            // Check if an active attempt exists for the same section
+            var recentAttempt = _context.QuizAttempts
+                .Where(a => a.UserId == userId && a.SectionId == sectionId)
+                .OrderByDescending(a => a.AttemptedAt)
+                .FirstOrDefault();
             // Save the answer in UserQuizResult
             var result = new UserQuizResult
             {
-                UserId = userName,  // Replace with actual user ID logic
+                UserId = userId,  // Replace with actual user ID logic
+                QuizAttemptId = recentAttempt.Id,
                 SectionId = sectionId,
                 QuestionId = questionId,
                 SelectedAnswer = selectedAnswer,
@@ -86,45 +97,58 @@ namespace quiz_system.Controllers
             var nextQuestion = section.Questions.FirstOrDefault(q => q.Id > questionId);
             if (nextQuestion == null)
             {
-                return RedirectToAction("QuizResult", new { sectionId = sectionId });
+                return RedirectToAction("QuizResult", new { sectionId = sectionId, sectionName = section.Name });
             }
+            // Get the current question number (e.g., 1/10)
+            int currentQuestionNumber = section.Questions.OrderBy(q => q.Id).ToList().IndexOf(nextQuestion) + 1;
 
+            int totalQuestions = section.Questions.Count;
             return View("TakeQuiz", new QuizViewModel
             {
                 SectionId = sectionId,
                 Question = nextQuestion,
                 TimeLimitInMinutes = section.TimeLimitInMinutes,
-                Section = section
+                Section = section,
+                CurrentQuestionNumber = currentQuestionNumber,
+                TotalQuestions = totalQuestions,
             });
         }
 
         // Action to show the results after the quiz
-        public IActionResult QuizResult(int sectionId)
+        public IActionResult QuizResult(int sectionId, string sectionName)
         {
-            var userName = HttpContext.Session.GetString("UserName"); ;
-            if (string.IsNullOrEmpty(userName))
+            var userId = _userManager.GetUserId(User);
+
+            try
             {
-                return RedirectToAction("EnterName");
+
+                var recentAttempt = _context.QuizAttempts
+                    .Where(a => a.UserId == userId && a.SectionId == sectionId)
+                    .OrderByDescending(a => a.AttemptedAt)
+                    .FirstOrDefault();
+
+
+                var results = _context.UserQuizResults
+                .Where(r => r.QuizAttemptId == recentAttempt.Id)
+                .ToList();
+
+                var correctAnswersCount = results.Count(r => r.IsCorrect);
+                var totalQuestions = results.Count;
+
+                ViewBag.SectionName = sectionName;
+                ViewBag.CorrectAnswers = correctAnswersCount;
+                ViewBag.TotalQuestions = totalQuestions;
+
+                return View(results);
             }
-            //var results = _context.UserQuizResults.Where(r => r.SectionId == sectionId).ToList();
-            //return View(results);
+            catch (Exception)
+            {
 
-            var results = _context.UserQuizResults
-           .Where(r => r.UserId == userName && r.SectionId == sectionId)
-           .ToList();
+                throw;
+            }
 
-            var correctAnswersCount = results.Count(r => r.IsCorrect);
-            var totalQuestions = results.Count;
 
-            ViewBag.UserName = userName;
-            ViewBag.CorrectAnswers = correctAnswersCount;
-            ViewBag.TotalQuestions = totalQuestions;
-            // Optionally clear the session if you don't want to keep userName in session anymore
-            HttpContext.Session.Remove("UserName"); // This removes only the "UserName" from the session
-                                                    // or
-                                                    // HttpContext.Session.Clear(); // This clears all session data
 
-            return View(results);
         }
     }
 }

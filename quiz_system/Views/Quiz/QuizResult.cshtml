@@ -1,43 +1,61 @@
 ﻿@model IEnumerable<UserQuizResult>
 
-<h2>Quiz Result</h2>
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Quiz Result</h2>
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <p><strong>Section Name:</strong> @ViewBag.SectionName</p>
+                <p><strong>Total Questions Attempted:</strong> @ViewBag.TotalQuestions</p>
+                <p><strong>Correct Answers:</strong> @ViewBag.CorrectAnswers</p>
+                @if (ViewBag.CorrectAnswers == ViewBag.TotalQuestions)
+                {
+                    <p class="text-success font-weight-bold">🎉 Congratulations! You got all the answers right.</p>
+                }
+                else
+                {
+                    <p class="text-danger font-weight-bold">❌ Better luck next time!</p>
+                }
+            </div>
 
-<p><strong>Username:</strong> @ViewBag.UserName</p>
-<p><strong>Total Questions:</strong> @ViewBag.TotalQuestions</p>
-<p><strong>Correct Answers:</strong> @ViewBag.CorrectAnswers</p>
-
-@if (ViewBag.CorrectAnswers == ViewBag.TotalQuestions)
-{
-    <p style="color:green;">Congratulations! You got all the answers right.</p>
-}
-else
-{
-    <p style="color:red;">Better luck next time!</p>
-}
-
-<a href="@Url.Action("EnterName", "User")" class="btn btn-primary">Try Again</a>
-
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Question</th>
-            <th>Your Answer</th>
-            <th>Correct Answer</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var result in Model)
-        {
-            <tr>
-                <td>@result.QuestionText</td>
-                <td>@result.SelectedAnswer</td>
-                <td>@result.CorrectAnswer</td>
-                <td>@(result.IsCorrect ? "Correct" : "Incorrect")</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<a href="@Url.Action("EnterName", "User")" class="btn btn-primary">Try Again</a>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Question</th>
+                            <th>Your Answer</th>
+                            <th>Correct Answer</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var result in Model)
+                        {
+                            <tr>
+                                <td>@result.QuestionText</td>
+                                <td>@result.SelectedAnswer</td>
+                                <td>@result.CorrectAnswer</td>
+                                <td class="text-center">
+                                    @if (result.IsCorrect)
+                                    {
+                                        <span class="text-success-emphasis">✔ Correct</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger-emphasis">✘ Incorrect</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Quiz")" class="btn btn-primary">Try Again</a>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary ml-3">Back to Home</a>
+        </div>
+    </div>
+</div>

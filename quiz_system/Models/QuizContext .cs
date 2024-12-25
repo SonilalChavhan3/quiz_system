@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using quiz_system.Models.QuizModel;
 using System.Collections.Generic;
 
 namespace quiz_system.Models
@@ -12,6 +13,7 @@ namespace quiz_system.Models
         public DbSet<Section> Sections { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<UserQuizResult> UserQuizResults { get; set; }
+        public DbSet<QuizAttempt> QuizAttempts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

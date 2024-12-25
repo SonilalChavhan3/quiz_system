@@ -32,7 +32,7 @@
                             <a class="nav-link" asp-controller="Admin" asp-action="ManageSections">Admin</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="User" asp-action="EnterName">Take Quiz</a>
+                            <a class="nav-link" asp-controller="Quiz" asp-action="Index">Take Quiz</a>
                         </li>
                     </ul>
                 </div>
@@ -47,7 +47,7 @@
                             </li>
 
                             <li>
-                                <a class="btn btn-warning" asp-action="Logout" asp-controller="Account" asp-route-Name="@User.Identity.Name">Logout</a>
+                                <a class="btn btn-warning" asp-action="Logout" asp-controller="Account">Logout</a>
                             </li>
                         </ul>
 

@@ -19,10 +19,10 @@ A code editor like Visual Studio or VS Code
 ## **Setup Instructions**
 
 1. Clone the repository:
-   ```https://github.com/SonilalChavhan3/quiz_system.git
+   -https://github.com/SonilalChavhan3/quiz_system.git
    
 # **Configure the Database**
-```"ConnectionStrings": {
+-"ConnectionStrings": {
   "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=SkillGaugeDb;Trusted_Connection=True;MultipleActiveResultSets=true"
 }
 

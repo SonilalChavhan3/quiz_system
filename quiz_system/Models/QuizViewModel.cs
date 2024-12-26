@@ -8,5 +8,6 @@
         public int TimeLimitInMinutes { get; set; }
         public int CurrentQuestionNumber { get; set; } // Current question number
         public int TotalQuestions { get; set; } // Total number of questions in the section
+        public int RemainingTimeInSeconds { get; set; }
     }
 }

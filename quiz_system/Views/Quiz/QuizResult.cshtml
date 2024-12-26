@@ -10,7 +10,7 @@
                 <p><strong>Section Name:</strong> @ViewBag.SectionName</p>
                 <p><strong>Total Questions Attempted:</strong> @ViewBag.TotalQuestions</p>
                 <p><strong>Correct Answers:</strong> @ViewBag.CorrectAnswers</p>
-                @if (ViewBag.CorrectAnswers == ViewBag.TotalQuestions)
+                @if (ViewBag.CorrectAnswers == ViewBag.TotalQuestions && (ViewBag.CorrectAnswers != 0 && ViewBag.TotalQuestions!=0))
                 {
                     <p class="text-success font-weight-bold">🎉 Congratulations! You got all the answers right.</p>
                 }
@@ -33,7 +33,7 @@
                     <tbody>
                         @foreach (var result in Model)
                         {
-                            <tr>
+                            <tr ondblclick="viewQuestionDetails(@result.QuestionId)">
                                 <td>@result.QuestionText</td>
                                 <td>@result.SelectedAnswer</td>
                                 <td>@result.CorrectAnswer</td>
@@ -59,3 +59,48 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="questionDetailsModal" tabindex="-1" aria-labelledby="questionDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="questionDetailsModalLabel">Question Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Question:</strong> <span id="modalQuestionText"></span></p>
+                <div id="modalOptions">
+                    <!-- Options will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        function viewQuestionDetails(questionId) {
+        fetch(`/Quiz/GetQuestionDetails?questionId=${questionId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Populate modal with question details
+                document.getElementById('modalQuestionText').textContent = data.questionText;
+
+                const optionsHtml = `
+                    <p><strong>Option A:</strong> ${data.optionA}</p>
+                    <p><strong>Option B:</strong> ${data.optionB}</p>
+                    <p><strong>Option C:</strong> ${data.optionC}</p>
+                    <p><strong>Option D:</strong> ${data.optionD}</p>
+                    <p><strong>Correct Answer:</strong> ${data.correctAnswer}</p>
+                `;
+                document.getElementById('modalOptions').innerHTML = optionsHtml;
+
+                // Show the modal
+                const modal = new bootstrap.Modal(document.getElementById('questionDetailsModal'));
+                modal.show();
+            })
+            .catch(error => console.error("Error fetching question details:", error));
+    }
+
+</script>

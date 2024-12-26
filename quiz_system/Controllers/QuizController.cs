@@ -56,7 +56,7 @@ namespace quiz_system.Controllers
                 quizViewModel.Section = section;
                 quizViewModel.CurrentQuestionNumber = 1;
                 quizViewModel.TotalQuestions = section.Questions.Count;
-
+                quizViewModel.RemainingTimeInSeconds = section.TimeLimitInMinutes * 60;// Start full time
                 return View(quizViewModel);
 
             }
@@ -80,6 +80,14 @@ namespace quiz_system.Controllers
                 .Where(a => a.UserId == userId && a.SectionId == sectionId)
                 .OrderByDescending(a => a.AttemptedAt)
                 .FirstOrDefault();
+
+            // Calculate remaining time
+            var elapsedTime = (DateTime.UtcNow - recentAttempt.AttemptedAt).TotalSeconds;
+            var remainingTime = section.TimeLimitInMinutes * 60 - elapsedTime;
+            if (remainingTime <= 0)
+            {
+                return RedirectToAction("QuizResult", new { sectionId = sectionId, sectionName = section.Name });
+            }
             // Save the answer in UserQuizResult
             var result = new UserQuizResult
             {
@@ -113,6 +121,7 @@ namespace quiz_system.Controllers
                 Section = section,
                 CurrentQuestionNumber = currentQuestionNumber,
                 TotalQuestions = totalQuestions,
+                RemainingTimeInSeconds = (int)remainingTime // Pass remaining time
             });
         }
 
@@ -152,6 +161,13 @@ namespace quiz_system.Controllers
 
 
         }
+        [HttpPost]
+        public IActionResult SubmitQuiz(int sectionId, string sectionName)
+        {
+            // Quiz processing logic
+            var redirectUrl = Url.Action("QuizResult", "Quiz", new { sectionId = sectionId, sectionName = sectionName });
+            return Json(new { redirectUrl });
+        }
 
         public IActionResult UserQuizResults()
         {
@@ -190,6 +206,24 @@ namespace quiz_system.Controllers
 
             // Pass the attempt and results to the view
             return View(attempt);
+        }
+        public IActionResult GetQuestionDetails(int questionId)
+        {
+            var question = _context.Questions.FirstOrDefault(q => q.Id == questionId);
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new
+            {
+                questionText = question.QuestionText,
+                optionA = question.OptionA,
+                optionB = question.OptionB,
+                optionC = question.OptionC,
+                optionD = question.OptionD,
+                correctAnswer = question.CorrectAnswer,
+            });
         }
 
     }

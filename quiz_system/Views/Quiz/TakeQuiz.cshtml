@@ -6,6 +6,9 @@
             <h2>@Model.Section.Name - Question</h2>
             <p>Question @Model.CurrentQuestionNumber / @Model.TotalQuestions</p>
         </div>
+        <div id="timer" class="alert alert-warning text-center">
+            Time Remaining: <span id="time-remaining"></span>
+        </div>
         <div class="card-body">
             @if (Model.Question != null)
             {
@@ -38,9 +41,7 @@
                         <button type="submit" class="btn btn-primary">Next Question</button>
                     </div>
 
-                    <div class="text-center mt-3">
-                        <p><strong>Time Left:</strong> @Model.TimeLimitInMinutes minutes</p>
-                    </div>
+                   
                 </form>
             }
             else
@@ -65,6 +66,39 @@
 </script>
 
 
+<script>
+    let totalTime = @Model.RemainingTimeInSeconds; // Use remaining time from the backend
+    const timerElement = document.getElementById("time-remaining");
 
+    const timerInterval = setInterval(() => {
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        totalTime--;
+
+        if (totalTime < 0) {
+            clearInterval(timerInterval);
+            submitQuiz();
+        }
+    }, 1000);
+
+    function submitQuiz() {
+        fetch(`/Quiz/SubmitQuiz?sectionId=${@Model.SectionId}&sectionName=${encodeURIComponent('@Model.Section.Name')}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            } else {
+                alert("Failed to submit the quiz automatically.");
+            }
+        });
+    }
+</script>
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quiz_system.Models;
@@ -7,6 +8,7 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace quiz_system.Controllers
 {
+    [Authorize]
     public class QuizController : Controller
     {
         private readonly QuizContext _context;
@@ -173,7 +175,7 @@ namespace quiz_system.Controllers
             return View(quizAttempts);
         }
 
-        public IActionResult VievQuizResult(int sectionId, int attempId)
+        public IActionResult ViewQuizResult(int sectionId, int attempId)
         {
             var userId = _userManager.GetUserId(User);
             var attempt = _context.QuizAttempts

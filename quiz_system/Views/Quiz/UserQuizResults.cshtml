@@ -1,41 +1,51 @@
-﻿@model IEnumerable<QuizAttempt>
+﻿
+
+@model IEnumerable<QuizAttempt>
 
 <div class="container mt-5">
-    <h2 class="text-center">Your Quiz Results</h2>
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Your Quiz Results</h2>
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-info">@TempData["Message"]</div>
+            }
+        </div>
+        <div class="card-body">
+           
 
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-info">@TempData["Message"]</div>
-    }
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Attempt Date</th>
+                            <th>Section</th>
+                            <th>Total Questions Attempted</th>
+                            <th>Correct Answers</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var attempt in Model)
+                        {
+                            <tr>
+                                <td>@attempt.AttemptedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>@attempt.Section.Name</td>
+                                <td>@attempt.UserQuizResults.Count()</td>
+                                <td>@attempt.UserQuizResults.Count(r => r.IsCorrect)</td>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>Attempt Date</th>
-                    <th>Section</th>
-                    <th>Total Questions</th>
-                    <th>Correct Answers</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var attempt in Model)
-                {
-                    <tr>
-                        <td>@attempt.AttemptedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                        <td>@attempt.Section.Name</td>
-                        <td>@attempt.UserQuizResults.Count()</td>
-                        <td>@attempt.UserQuizResults.Count(r => r.IsCorrect)</td>
-                       
-                        <td>
-                            <a href="@Url.Action("VievQuizResult", "Quiz", new { sectionId = attempt.SectionId,attempId = attempt.Id })" class="btn btn-info btn-sm">View Results</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                                <td>
+                                    <a href="@Url.Action("VievQuizResult", "Quiz", new { sectionId = attempt.SectionId,attempId = attempt.Id })" class="btn btn-info btn-sm">View Results</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="@Url.Action("Index", "Quiz")" class="btn btn-primary">Try Again</a>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to home</a>
+        </div>
     </div>
 </div>
-
-

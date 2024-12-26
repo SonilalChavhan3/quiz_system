@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<Section>
-
+@{
+    ViewData["Title"] = "Manage Sections";
+}
 <h2>Manage Sections</h2>
 
 <a href="@Url.Action("CreateSection", "Admin")" class="btn btn-success">Create New Section</a>

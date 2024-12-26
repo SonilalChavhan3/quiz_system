@@ -1,8 +1,85 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@{
+    ViewData["Title"] = "Home - SkillGauge";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-   
+<div class="container mt-5">
+    <!-- Hero Section -->
+    <div class="jumbotron text-center bg-primary text-white shadow-lg rounded">
+        <h1 class="display-4">Welcome to SkillGauge</h1>
+        <p class="lead">Your one-stop platform for quiz management and skill assessment.</p>
+        <a href="@Url.Action("Index", "Quiz")" class="btn btn-light btn-lg mt-3">Get Started</a>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-md-4 text-center">
+            <i class="fas fa-graduation-cap fa-3x text-primary"></i>
+            <h3 class="mt-3">Comprehensive Quiz Management</h3>
+            <p>Create, manage, and monitor quizzes effortlessly.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-chart-line fa-3x text-success"></i>
+            <h3 class="mt-3">Advanced Analytics</h3>
+            <p>Track performance and generate insightful reports.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-shield-alt fa-3x text-warning"></i>
+            <h3 class="mt-3">Secure & Reliable</h3>
+            <p>Ensure data safety and system reliability.</p>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <img src="https://t3.ftcdn.net/jpg/04/67/10/02/360_F_467100228_IB9BaE1WU8pHRgDruKi2WhcHpMQtrTYK.jpg" class="img-fluid rounded shadow" alt="Quiz Management">
+           
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h2>Why Choose SkillGauge?</h2>
+            <p>
+                SkillGauge empowers educators, businesses, and students to achieve their learning goals
+                with ease. Create quizzes, analyze results, and improve learning outcomes all in one place.
+            </p>
+            <a href="#" class="btn btn-primary mt-3">Learn More</a>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div class="text-center mt-5">
+        <h2>What Our Users Say</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p>"SkillGauge transformed the way we assess our employees' skills!"</p>
+                        <h6 class="text-muted">- Jane Doe, HR Manager</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p>"A powerful tool for educators to track student progress."</p>
+                        <h6 class="text-muted">- John Smith, Educator</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p>"Intuitive, efficient, and reliable. Highly recommended!"</p>
+                        <h6 class="text-muted">- Sarah Lee, Team Leader</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-5">
+        <h2>Ready to Elevate Your Skills?</h2>
+        <a href="@Url.Action("Register", "Account")" class="btn btn-success btn-lg">Join SkillGauge Today</a>
+    </div>
 </div>

@@ -7,7 +7,7 @@ namespace quiz_system.Models.Account
     {
         [Required]
         [EmailAddress]
-       [Remote(action: "IsUserRegistered", controller: "Account")]
+        [Remote(action: "IsUserRegistered", controller: "Account")]
         public string Email { get; set; }
 
         [Required]

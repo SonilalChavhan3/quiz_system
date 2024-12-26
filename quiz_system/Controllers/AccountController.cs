@@ -89,6 +89,13 @@ public class AccountController : Controller
         }
         return View(model);
     }
+
+    [AllowAnonymous]
+    public IActionResult AccessDenied(string message = null)
+    {
+        return View("AccessDenied", message);
+    }
+
     [AcceptVerbs("Get", "Post")]
     [AllowAnonymous]
     public async Task<IActionResult> IsUserRegistered(string email)
@@ -96,14 +103,15 @@ public class AccountController : Controller
         var user = await _userManager.FindByEmailAsync(email);
         if (user != null)
         {
-            if (!user.EmailConfirmed)
-            {
-                return Json($"{email}, please confirm your email!.");
-            }
-            else
-            {
-                return Json(true);
-            }
+            //if (!user.EmailConfirmed)
+            //{
+            //    return Json($"{email}, please confirm your email!.");
+            //}
+            //else
+            //{
+            //    return Json(true);
+            //}
+            return Json(true);
         }
         else
         {

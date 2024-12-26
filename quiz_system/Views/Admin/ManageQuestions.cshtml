@@ -1,5 +1,7 @@
 ﻿@model Section
-
+@{
+    ViewData["Title"] = "Manage Questions";
+}
 <h2>Manage Questions for @Model.Name</h2>
 
 <a href="@Url.Action("CreateQuestion", "Admin", new { sectionId = Model.Id })" class="btn btn-success">Add New Question</a>

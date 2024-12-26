@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quiz_system.Models;
 
 namespace quiz_system.Controllers
 {
+    [Authorize(Roles = "SuperAdmin")]
     public class AdminController : Controller
     {
         private readonly QuizContext _context;

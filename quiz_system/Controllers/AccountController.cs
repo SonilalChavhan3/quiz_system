@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using quiz_system.Models.Account;
 using quiz_system.Models;
+using Microsoft.AspNetCore.Authorization;
 
 public class AccountController : Controller
 {
@@ -44,7 +45,21 @@ public class AccountController : Controller
         }
         return View(model);
     }
-
+    //remote validation
+    [AcceptVerbs("Get", "Post")]
+    [AllowAnonymous]
+    public async Task<IActionResult> IsEmailInUse(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return Json(true);
+        }
+        else
+        {
+            return Json($"Emial {email} is already in use.");
+        }
+    }
     // Login action
     [HttpGet]
     public IActionResult Login(string returnUrl = null)
@@ -74,9 +89,29 @@ public class AccountController : Controller
         }
         return View(model);
     }
-
+    [AcceptVerbs("Get", "Post")]
+    [AllowAnonymous]
+    public async Task<IActionResult> IsUserRegistered(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
+        {
+            if (!user.EmailConfirmed)
+            {
+                return Json($"{email}, please confirm your email!.");
+            }
+            else
+            {
+                return Json(true);
+            }
+        }
+        else
+        {
+            return Json($"{email} is not registered yet on portal,Please Register!");
+        }
+    }
     // Logout action
-    
+
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();

@@ -19,17 +19,15 @@ A code editor like Visual Studio or VS Code
 ## **Setup Instructions**
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/SkillGauge.git
-   dotnet ef database update
+   ```https://github.com/SonilalChavhan3/quiz_system.git
    
 # **Configure the Database**
--"ConnectionStrings": {
+```"ConnectionStrings": {
   "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=SkillGaugeDb;Trusted_Connection=True;MultipleActiveResultSets=true"
 }
 
 **Apply Migrations**
--dotnet ef database update
+update-database
 
 # **Contribution Guidelines**
 -We welcome contributions! Please follow these steps to contribute:
@@ -38,6 +36,6 @@ A code editor like Visual Studio or VS Code
 -Create a new branch for your feature/bug fix.
 -Commit your changes and push the branch to your forked repository.
 -Open a pull request and describe your changes in detail.
-#**Contact**
--For queries or support, contact us at:
--Email: chavhansonila@gmail.com
+# **Contact**
+For queries or support, contact us at:
+Email: chavhansonila@gmail.com

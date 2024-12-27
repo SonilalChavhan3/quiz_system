@@ -163,11 +163,11 @@ namespace quiz_system.Controllers
                 if (questionObj != null)
                 {
                     questionObj.QuestionText = question.QuestionText;
-                    questionObj.OptionA= question.OptionA;
-                    questionObj.OptionB= question.OptionB;
-                    questionObj.OptionC= question.OptionC;
-                    questionObj.OptionD= question.OptionD;
-                    questionObj.CorrectAnswer= question.CorrectAnswer;
+                    questionObj.OptionA = question.OptionA;
+                    questionObj.OptionB = question.OptionB;
+                    questionObj.OptionC = question.OptionC;
+                    questionObj.OptionD = question.OptionD;
+                    questionObj.CorrectAnswer = question.CorrectAnswer;
                     _context.Questions.Update(questionObj);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(ManageQuestions), new { sectionId = question.SectionId });
@@ -210,19 +210,30 @@ namespace quiz_system.Controllers
 
             // Get user emails and their corresponding scores
             var userScores = results
-                .GroupBy(r => r.UserId)
-                .Join(
-                    _context.Users, // Assuming you're using AspNetUsers table for user info
-                    userScore => userScore.Key,
-                    user => user.Id,
-                    (userScore, user) => new
-                    {
-                        UserId = userScore.Key,
-                        UserEmail = user.Email,  // Get the user's email
-                        CorrectAnswers = userScore.Count(r => r.IsCorrect)  // Count the correct answers for each user
-                    })
-                .OrderByDescending(u => u.CorrectAnswers)  // Sort by the number of correct answers in descending order
-                .ToList();
+        .GroupBy(r => r.UserId)
+        .Join(
+            _context.Users, // Assuming you're using AspNetUsers table for user info
+            userScore => userScore.Key,
+            user => user.Id,
+            (userScore, user) => new
+            {
+                UserId = userScore.Key,
+                UserEmail = user.Email,  // Get the user's email
+                CorrectAnswers = userScore.Count(r => r.IsCorrect)  // Count the correct answers for each user
+            })
+        .Join(
+            _context.Sections, // Assuming you're using Sections table to get the section details
+            userScore => sectionId,  // Join by SectionId
+            section => section.Id,
+            (userScore, section) => new
+            {
+                userScore.UserId,      // Access the UserId from the first Join
+                userScore.UserEmail,   // Access the UserEmail from the first Join
+                userScore.CorrectAnswers,  // Access CorrectAnswers from the first Join
+                SectionName = section.Name // Add the SectionName from the Sections table
+            })
+        .OrderByDescending(u => u.CorrectAnswers)  // Sort by the number of correct answers in descending order
+        .ToList();
 
             // Pass the userScores and sectionId to the view
             ViewData["SectionId"] = sectionId;

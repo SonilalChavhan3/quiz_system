@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using quiz_system.CustomFilter;
 using quiz_system.CustomMiddleware;
 using quiz_system.Models;
-using quiz_system.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +47,7 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/Login"; // Path to your login page
     options.AccessDeniedPath = "/Account/AccessDenied"; // Path to your Access Denied page
 });
-builder.Services.AddScoped<CodeExecutionService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

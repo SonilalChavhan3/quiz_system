@@ -1,0 +1,45 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Quiz Results";
+    int sectionId = (int)ViewData["SectionId"];
+}
+
+<div class="container mt-4">
+    <h2>Users with the Highest Correct Answers in Section @sectionId</h2>
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                       
+                        <th>User Email</th>
+                        <th>Correct Answers</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var userScore in Model)
+                    {
+                        <tr>
+                           
+                            <td>@userScore.UserEmail</td>
+                            <td>@userScore.CorrectAnswers</td>
+                            <td> <a href="@Url.Action("UserQuizResults", "Quiz", new { UserId = @userScore.UserId })" class="btn btn-info">View Result</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            No results found for this section.
+        </div>
+    }
+</div>
+
+

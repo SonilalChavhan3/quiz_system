@@ -38,7 +38,7 @@
                                     <td>@attempt.UserQuizResults.Count(r => r.IsCorrect)</td>
 
                                     <td>
-                                        <a href="@Url.Action("ViewQuizResult", "Quiz", new { sectionId = attempt.SectionId,attempId = attempt.Id })" class="btn btn-info btn-sm">View Results</a>
+                                        <a href="@Url.Action("ViewQuizResult", "Quiz", new { sectionId = attempt.SectionId,attempId = attempt.Id,UserId = attempt.UserId })" class="btn btn-info btn-sm">View Results</a>
                                     </td>
                                 </tr>
                             }

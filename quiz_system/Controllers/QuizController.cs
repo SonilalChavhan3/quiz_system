@@ -169,13 +169,23 @@ namespace quiz_system.Controllers
             return Json(new { redirectUrl });
         }
 
-        public IActionResult UserQuizResults()
+        public IActionResult UserQuizResults(string UserId = null)
         {
-            var userId = _userManager.GetUserId(User); // Get the authenticated user's ID
+            string UserIdobj = String.Empty;
+            if (string.IsNullOrEmpty(UserId))
+            {
+                UserIdobj = _userManager.GetUserId(User); // Get the authenticated user's ID
+            }
+            else
+            {
+                UserIdobj = UserId;
+            }
+
+            
 
             // Fetch all the quiz attempts for the authenticated user
             var quizAttempts = _context.QuizAttempts
-                .Where(qa => qa.UserId == userId)
+                .Where(qa => qa.UserId == UserIdobj)
                 .Include(qa => qa.Section) // Include section data (optional but useful for displaying section name)
                 .Include(qa => qa.UserQuizResults) // Include related quiz results for each attempt
                 .OrderByDescending(qa => qa.AttemptedAt) // Order by date descending
@@ -191,13 +201,21 @@ namespace quiz_system.Controllers
             return View(quizAttempts);
         }
 
-        public IActionResult ViewQuizResult(int sectionId, int attempId)
+        public IActionResult ViewQuizResult(int sectionId, int attempId, string UserId = null)
         {
-            var userId = _userManager.GetUserId(User);
+            string UserIdobj = String.Empty;
+            if (string.IsNullOrEmpty(UserId))
+            {
+                UserIdobj = _userManager.GetUserId(User); // Get the authenticated user's ID
+            }
+            else
+            {
+                UserIdobj = UserId;
+            }
             var attempt = _context.QuizAttempts
                 .Include(a => a.Section.Questions)
                 .Include(a => a.UserQuizResults)
-                .FirstOrDefault(a => a.UserId == userId && a.SectionId == sectionId && a.Id == attempId);
+                .FirstOrDefault(a => a.UserId == UserIdobj && a.SectionId == sectionId && a.Id == attempId);
 
             if (attempt == null)
             {

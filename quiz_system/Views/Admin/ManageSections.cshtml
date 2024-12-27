@@ -24,6 +24,8 @@
                     <a href="@Url.Action("EditSection", "Admin", new { id = sections.Id })" class="btn btn-warning">Edit</a>
                     <a href="@Url.Action("DeleteSection", "Admin", new { id = sections.Id })" class="btn btn-danger">Delete</a>
                     <a href="@Url.Action("ManageQuestions", "Admin", new { sectionId = sections.Id })" class="btn btn-info">Manage Questions</a>
+                    <a href="@Url.Action("GetResultsBySection", "Admin", new { sectionId = sections.Id })" class="btn btn-info">View Top Result</a>
+
                 </td>
             </tr>
         }

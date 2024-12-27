@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quiz_system.Models;
+using quiz_system.Models.QuizModel;
 
 namespace quiz_system.Controllers
 {
@@ -196,5 +197,60 @@ namespace quiz_system.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(ManageQuestions), new { sectionId = question.SectionId });
         }
+
+        // GET: /QuizResults/GetResultsBySection/sectionId
+        public async Task<IActionResult> GetResultsBySection(int sectionId)
+        {
+            var results = await GetUserQuizResultsBySectionAsync(sectionId);
+
+            if (!results.Any())
+            {
+                return NotFound("No results found for this section.");
+            }
+
+            // Get user emails and their corresponding scores
+            var userScores = results
+                .GroupBy(r => r.UserId)
+                .Join(
+                    _context.Users, // Assuming you're using AspNetUsers table for user info
+                    userScore => userScore.Key,
+                    user => user.Id,
+                    (userScore, user) => new
+                    {
+                        UserId = userScore.Key,
+                        UserEmail = user.Email,  // Get the user's email
+                        CorrectAnswers = userScore.Count(r => r.IsCorrect)  // Count the correct answers for each user
+                    })
+                .OrderByDescending(u => u.CorrectAnswers)  // Sort by the number of correct answers in descending order
+                .ToList();
+
+            // Pass the userScores and sectionId to the view
+            ViewData["SectionId"] = sectionId;
+            return View(userScores);
+        }
+
+
+        public async Task<IEnumerable<UserQuizResult>> GetUserQuizResultsBySectionAsync(int sectionId)
+        {
+            // Get the latest QuizAttempt for the specified SectionId
+            var latestAttempts = await _context.QuizAttempts
+                .Where(qa => qa.SectionId == sectionId)
+                .GroupBy(qa => qa.UserId)  // Group by UserId to get each user's latest attempt
+                .Select(g => g.OrderByDescending(qa => qa.AttemptedAt).FirstOrDefault())  // Get the most recent attempt for each user
+                .ToListAsync();
+
+            if (!latestAttempts.Any())
+            {
+                return Enumerable.Empty<UserQuizResult>();  // No attempts found for this section
+            }
+
+            // Get the UserQuizResults for the most recent attempts for each user
+            var userResults = await _context.UserQuizResults
+                .Where(ur => latestAttempts.Select(la => la.Id).Contains(ur.QuizAttemptId))
+                .ToListAsync();
+
+            return userResults;
+        }
+
     }
 }

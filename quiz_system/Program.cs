@@ -1,18 +1,26 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using quiz_system.CustomFilter;
+using quiz_system.CustomMiddleware;
 using quiz_system.Models;
+using quiz_system.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => { options.Filters.Add<GlobalExceptionFilter>(); });
 
 builder.Services.AddDbContext<QuizContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlServerOptions =>
+        sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Number of retry attempts
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Max delay between retries
+            errorNumbersToAdd: null // Optional
+)));
 
 // Add Identity services to the container
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -39,10 +47,11 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/Login"; // Path to your login page
     options.AccessDeniedPath = "/Account/AccessDenied"; // Path to your Access Denied page
 });
-
+builder.Services.AddScoped<CodeExecutionService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<GlobalExceptionMiddleware>();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

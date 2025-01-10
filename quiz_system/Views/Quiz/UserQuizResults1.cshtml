@@ -1,0 +1,89 @@
+﻿@* @model IEnumerable<dynamic>
+
+<h2>User Quiz Results</h2>
+
+@if (TempData["Message"] != null)
+{
+    <p>@TempData["Message"]</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var result in Model)
+        {
+            <div class="col-md-4">
+                <div class="card text-center mb-4
+                    @(result.Performance == "High" ? "bg-success text-white" :
+                      result.Performance == "Average" ? "bg-warning text-dark" :
+                      "bg-danger text-white")"
+                     style="padding: 20px; border-radius: 8px;">
+                    <h4>@result.SectionName</h4>
+                    <p>Total Questions: @result.TotalQuestions</p>
+                    <p>Correct Answers: @result.CorrectAnswers</p>
+                    <p>Percentage: @result.Percentage%</p>
+                    <p><strong>Performance: @result.Performance</strong></p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+ *@
+
+ @model IEnumerable<dynamic>
+
+<h2>User Quiz Results</h2>
+
+@if (TempData["Message"] != null)
+{
+    <p>@TempData["Message"]</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var result in Model)
+        {
+            <div class="col-md-4">
+                <div class="card text-center mb-4" style="padding: 20px; border-radius: 8px;">
+                    <h4>@result.SectionName</h4>
+                    <div class="progress-circle"
+                         style="--percentage: @result.Percentage;
+                                --circle-color: @(result.Performance == "High" ? "#28a745" :
+                                                  result.Performance == "Average" ? "#ffc107" : "#dc3545");">
+                        <span>@result.Percentage%</span>
+                    </div>
+                    <p>Total Questions: @result.TotalQuestions</p>
+                    <p>Correct Answers: @result.CorrectAnswers</p>
+                    <p><strong>Performance: @result.Performance</strong></p>
+                    <a href="@Url.Action("ViewQuizResult", "Quiz", new { sectionId = result.SectionId, attempId = result.AttemptId, UserId = result.UserId })" class="btn btn-info btn-sm">View Results</a>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .progress-circle {
+        --size: 100px; /* Adjust size of the circle */
+        --thickness: 10px; /* Thickness of the circle */
+        --background-color: #dcdcdc; /* Background color of the circle */
+        width: var(--size);
+        height: var(--size);
+        border-radius: 50%;
+        background: conic-gradient( var(--circle-color) calc(var(--percentage) * 1%), var(--background-color) 0 );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+    }
+
+        .progress-circle span {
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .progress-circle[data-value="0"] {
+            background: var(--background-color);
+        }
+</style>

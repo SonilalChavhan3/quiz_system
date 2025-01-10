@@ -1,0 +1,29 @@
+﻿@model FindUserResultsViewModel
+
+<h2>Find User Results</h2>
+
+@if (TempData["Message"] != null)
+{
+    <p class="alert alert-info">@TempData["Message"]</p>
+}
+
+<form method="post" action="FindUserResults">
+    <div class="form-group">
+        <label for="userDropdown">Select a User:</label>
+        <select id="userDropdown" name="SelectedUserId" class="form-control">
+            <option value="">-- Select User --</option>
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Value">@user.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="emailInput">Or Enter Email Address:</label>
+        <input type="email" id="emailInput" name="SearchEmail" class="form-control" placeholder="Enter email address" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Find Results</button>
+</form>
+

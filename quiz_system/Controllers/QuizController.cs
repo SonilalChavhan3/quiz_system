@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using quiz_system.Models;
 using quiz_system.Models.QuizModel;
@@ -242,6 +243,98 @@ namespace quiz_system.Controllers
                 optionD = question.OptionD,
                 correctAnswer = question.CorrectAnswer,
             });
+        }
+        public IActionResult FindUserResults()
+        {
+            // Fetch all unique user IDs from QuizAttempts
+            var usersWithResultsIds = _context.QuizAttempts
+                .Select(qa => qa.UserId)
+                .Distinct()
+                .ToList();
+
+            // Fetch the corresponding user details from AspNetUsers
+            var usersWithResults = _context.Users // Assuming _context.Users refers to AspNetUsers
+                .Where(u => usersWithResultsIds.Contains(u.Id))
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = u.Email // Use the Email field from AspNetUsers
+                })
+                .ToList();
+
+            // Create the view model
+            var model = new FindUserResultsViewModel
+            {
+                Users = usersWithResults
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public IActionResult FindUserResults(FindUserResultsViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.SearchEmail))
+            {
+                // Find user by email
+                var user = _userManager.Users.FirstOrDefault(u => u.Email == model.SearchEmail);
+                if (user == null)
+                {
+                    TempData["Message"] = "No user found with the provided email address.";
+                    return View(model);
+                }
+
+                // Redirect to the UserQuizResults method
+                return RedirectToAction("UserQuizResults1", new { UserId = user.Id });
+            }
+            else if (!string.IsNullOrEmpty(model.SelectedUserId))
+            {
+                // Redirect to the UserQuizResults method
+                return RedirectToAction("UserQuizResults1", new { UserId = model.SelectedUserId });
+            }
+
+            TempData["Message"] = "Please select a user or enter an email address.";
+            return View(model);
+        }
+
+
+        public IActionResult UserQuizResults1(string UserId = null)
+        {
+            string UserIdobj = string.IsNullOrEmpty(UserId) ? _userManager.GetUserId(User) : UserId;
+
+            var quizAttempts = _context.QuizAttempts
+                .Where(qa => qa.UserId == UserIdobj)
+                .Include(qa => qa.Section)
+                .Include(qa => qa.UserQuizResults)
+                .OrderByDescending(qa => qa.AttemptedAt)
+                .ToList();
+
+            var results = quizAttempts.Select(qa => new
+            {
+                SectionName = qa.Section.Name,
+                TotalQuestions = qa.UserQuizResults.Count,
+                SectionId=qa.Section.Id,
+                AttemptId = qa.Id,
+                UserId=qa.UserId,
+                CorrectAnswers = qa.UserQuizResults.Count(r => r.IsCorrect),
+                Percentage = qa.UserQuizResults.Count > 0
+                    ? (qa.UserQuizResults.Count(r => r.IsCorrect) * 100) / qa.UserQuizResults.Count
+                    : 0,
+                Performance = qa.UserQuizResults.Count > 0
+                    ? (qa.UserQuizResults.Count(r => r.IsCorrect) * 100) / qa.UserQuizResults.Count >= 75 ? "High" :
+                      (qa.UserQuizResults.Count(r => r.IsCorrect) * 100) / qa.UserQuizResults.Count >= 50 ? "Average" :
+                      "Low"
+                    : "Low"
+            }).ToList();
+
+            if (!results.Any())
+            {
+                TempData["Message"] = "No quiz results found.";
+                return View();
+            }
+
+            return View(results);
         }
 
     }

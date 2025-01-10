@@ -328,6 +328,7 @@ namespace quiz_system.Controllers
                     : "Low"
             }).ToList();
 
+
             if (!results.Any())
             {
                 TempData["Message"] = "No quiz results found.";

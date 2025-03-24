@@ -51,7 +51,7 @@ pipeline {
                     bat """
                         dotnet sonarscanner begin /k:"quiz_system" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="%SONARQUBE_TOKEN%"
                         dotnet build --configuration Release
-                        dotnet sonarscanner end /d:sonar.login="%sonarqubesecret%"
+                        dotnet sonarscanner end /d:sonar.login="%SONARQUBE_TOKEN%"
                     """
                 }
             }

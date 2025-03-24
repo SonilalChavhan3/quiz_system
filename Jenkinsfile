@@ -16,10 +16,12 @@ pipeline {
 
         stage('Verify .NET SDK') {
             steps {
-                script {
-                    def dotnetVersion = bat(script: 'dotnet --version', returnStdout: true).trim()
-                    if (!dotnetVersion.startsWith(DOTNET_VERSION)) {
-                        error "Expected .NET version $DOTNET_VERSION, but found $dotnetVersion!"
+               script {
+            def dotnetVersion = bat(script: 'dotnet --version', returnStdout: true).trim().split("\r?\n")[-1] // Get last line
+            if (!dotnetVersion.startsWith(DOTNET_VERSION)) {
+                error "Expected .NET version $DOTNET_VERSION, but found $dotnetVersion!"
+            } else {
+                echo "Verified .NET version: $dotnetVersion"
                     }
                 }
             }

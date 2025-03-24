@@ -49,7 +49,7 @@ pipeline {
             steps {
                 withSonarQubeEnv(SONARQUBE_URL) {
                     bat """
-                        dotnet sonarscanner begin /k:"quiz_system" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="%SONARQUBE_TOKEN%"
+                        dotnet sonarscanner begin /k:"quiz_system" /d:sonar.host.url="http://113.193.63.106:55017" /d:sonar.login="%SONARQUBE_TOKEN%"
                         dotnet build --configuration Release
                         dotnet sonarscanner end /d:sonar.login="%SONARQUBE_TOKEN%"
                     """

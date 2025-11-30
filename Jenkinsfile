@@ -8,7 +8,7 @@ pipeline {
         //PS_SCRIPT_PATH = "C:\\Tools\\commonbuild\\NugetPackagePublish.ps1"
          PS_SCRIPT_PATH = ".\\NugetPackagePublish.ps1"
         Project_Name = "quiz_system"
-        TestProjectName = "Quiz_System.Tests/Quiz_System.Tests.csproj"
+       // TestProjectName = "Quiz_System.Tests/Quiz_System.Tests.csproj"
         
     }
 
@@ -59,7 +59,8 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Running unit tests..."
-                    bat "dotnet test ${TestProjectName} --configuration Release --no-build"
+                 //   bat "dotnet test ${TestProjectName} --configuration Release --no-build"
+                bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build"
             }
         }
 

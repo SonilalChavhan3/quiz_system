@@ -9,6 +9,7 @@ pipeline {
         PS_SCRIPT_PATH = ".\\NugetPackagePublish.ps1"
         Project_Name = "quiz_system"
         TestProjectName = "Quiz_System.Tests\\Quiz_System.Tests.csproj"
+        REPORTGEN = "C:\\Users\\HP\\.dotnet\\tools\\reportgenerator.exe"
     }
 
     stages {
@@ -39,7 +40,7 @@ pipeline {
                             /k:\"${env.Project_Name}_${env.BRANCH_NAME}\" ^
                             /n:\"${env.Project_Name} (${env.BRANCH_NAME})\" ^
                             /v:\"${env.BUILD_NUMBER}\" ^
-                            /d:sonar.cs.vscoveragexml.reportsPaths=\"coverage-report\\Cobertura.xml\" ^
+                            /d:sonar.cs.opencover.reportsPaths=\"coverage-report\\Cobertura.xml\" ^
                             /d:sonar.coverage.exclusions=\"**/bin/**,**/obj/**\"
                         """
                     }
@@ -66,22 +67,22 @@ pipeline {
             }
         }
 
-       stage('Coverage Report') {
-    steps {
-        bat """
-            \"C:\\Users\\HP\\.dotnet\\tools\\reportgenerator.exe\" ^
-                -reports:**/coverage.cobertura.xml ^
-                -targetdir:coverage-report ^
-                -reporttypes:Cobertura
-        """
-    }
-}
+        stage('Coverage Report') {
+            steps {
+                echo "Generating Cobertura coverage report..."
+                bat """
+                    \"${env.REPORTGEN}\" ^
+                        -reports:**/coverage.cobertura.xml ^
+                        -targetdir:coverage-report ^
+                        -reporttypes:Cobertura
+                """
+            }
+        }
 
         stage('SonarQube End') {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner for MSBuild'
-
                     withSonarQubeEnv('MySonarQube') {
                         bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
                     }

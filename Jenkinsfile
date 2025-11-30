@@ -27,7 +27,32 @@ pipeline {
                 bat "dotnet restore ${env.SOLUTION_NAME}"
             }
         }
+         stage('Test') {
+            steps {
+               // echo "Running unit tests..."
+                 //   bat "dotnet test ${TestProjectName} --configuration Release --no-build"
+               // bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build"
 
+                 echo "Running unit tests + Coverage..."
+
+        bat """
+            dotnet test $env.SOLUTION_NAME} ^
+                --configuration Release ^
+                --no-build ^
+                --collect "XPlat Code Coverage"
+        """
+            }
+        }
+        stage('Coverage Report') {
+            steps {
+                bat """
+                    reportgenerator ^
+                        "-reports:**/coverage.cobertura.xml" ^
+                        "-targetdir:coverage-report" ^
+                        "-reporttypes:Cobertura"
+                """
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 script {
@@ -41,6 +66,8 @@ pipeline {
                     /k:\"${env.Project_Name}_${env.BRANCH_NAME}\" ^
                     /n:\"${env.Project_Name} (${env.BRANCH_NAME})\" ^
                     /v:\"${env.BUILD_NUMBER}\" ^
+                    /d:sonar.cs.vscoveragexml.reportsPaths="coverage-report\\Cobertura.xml" ^
+                    /d:sonar.coverage.exclusions="**/bin/**,**/obj/**"
                 """
                         bat "dotnet build ${env.SOLUTION_NAME} -c Release"
                         bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
@@ -56,13 +83,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                echo "Running unit tests..."
-                 //   bat "dotnet test ${TestProjectName} --configuration Release --no-build"
-                bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build"
-            }
-        }
+       
 
         stage('Create and Push NuGet Package') {
             steps {

@@ -31,7 +31,7 @@ pipeline {
             steps {
                 echo "Running unit tests..."
                  //   bat "dotnet test ${TestProjectName} --configuration Release --no-build"
-                bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build --collect "XPlat Code Coverage"
+                bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build --collect "XPlat Code Coverage""
             }
         }
         stage('Coverage Report') {

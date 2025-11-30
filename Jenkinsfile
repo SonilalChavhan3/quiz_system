@@ -8,7 +8,7 @@ pipeline {
         //PS_SCRIPT_PATH = "C:\\Tools\\commonbuild\\NugetPackagePublish.ps1"
          PS_SCRIPT_PATH = ".\\NugetPackagePublish.ps1"
         Project_Name = "quiz_system"
-        TestProjectName = "Quiz_System.Tests"
+        TestProjectName = "Quiz_System.Tests/Quiz_System.Tests.csproj"
         
     }
 

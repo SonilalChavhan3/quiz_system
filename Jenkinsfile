@@ -66,17 +66,16 @@ pipeline {
             }
         }
 
-        stage('Generate Coverage Report') {
-            steps {
-                echo "Generating coverage report..."
-                bat """
-                    reportgenerator ^
-                        "-reports:**/coverage.cobertura.xml" ^
-                        "-targetdir:coverage-report" ^
-                        "-reporttypes:Cobertura"
-                """
-            }
-        }
+       stage('Coverage Report') {
+    steps {
+        bat """
+            \"C:\\Users\\HP\\.dotnet\\tools\\reportgenerator.exe\" ^
+                -reports:**/coverage.cobertura.xml ^
+                -targetdir:coverage-report ^
+                -reporttypes:Cobertura
+        """
+    }
+}
 
         stage('SonarQube End') {
             steps {

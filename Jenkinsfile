@@ -31,7 +31,7 @@ pipeline {
             steps {
                 echo "Running unit tests..."
                  //   bat "dotnet test ${TestProjectName} --configuration Release --no-build"
-                bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build --collect "XPlat Code Coverage""
+                bat "dotnet test ${env.SOLUTION_NAME} --configuration Release --no-build --collect \"XPlat Code Coverage\""
             }
         }
         stage('Coverage Report') {
@@ -58,7 +58,7 @@ pipeline {
                     /n:\"${env.Project_Name} (${env.BRANCH_NAME})\" ^
                     /v:\"${env.BUILD_NUMBER}\" ^
                     /d:sonar.cs.vscoveragexml.reportsPaths="coverage-report\\Cobertura.xml" ^
-                    /d:sonar.coverage.exclusions="**/bin/**,**/obj/**"
+                    /d:sonar.coverage.exclusions=\"**/bin/**,**/obj/**\"
                 """
                         bat "dotnet build ${env.SOLUTION_NAME} -c Release"
                         bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
@@ -69,8 +69,8 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo "⚙️ Building .NET project..."
-                bat "dotnet build ${env.PROJECT_PATH} -c Release --no-restore"
+                //echo "⚙️ Building .NET project..."
+                //bat "dotnet build ${env.PROJECT_PATH} -c Release --no-restore"
             }
         }
 

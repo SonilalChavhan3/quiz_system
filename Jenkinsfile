@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     environment {
         DOTNET_ROOT = "C:\\Program Files\\dotnet"
         SOLUTION_NAME = "quiz_system.sln"
@@ -9,11 +8,10 @@ pipeline {
         PS_SCRIPT_PATH = ".\\NugetPackagePublish.ps1"
         Project_Name = "quiz_system"
         TestProjectName = "Quiz_System.Tests\\Quiz_System.Tests.csproj"
-        REPORTGEN = "C:\\Users\\HP\\.dotnet\\tools\\reportgenerator.exe"
+       // REPORTGEN = "C:\\Users\\HP\\.dotnet\\tools\\reportgenerator.exe"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo "[${new Date().format('HH:mm:ss')}] Cleaning workspace..."
@@ -29,64 +27,54 @@ pipeline {
             }
         }
 
-        stage('SonarQube Begin') {
-            steps {
-                script {
-                    def scannerHome = tool 'SonarScanner for MSBuild'
+       stage('SonarQube Analysis') {
+    steps {
+        script {
+            def scannerHome = tool 'SonarScanner for MSBuild'
 
-                    withSonarQubeEnv('MySonarQube') {
-                        bat """
-                            \"${scannerHome}\\SonarScanner.MSBuild.exe\" begin ^
-                            /k:\"${env.Project_Name}_${env.BRANCH_NAME}\" ^
-                            /n:\"${env.Project_Name} (${env.BRANCH_NAME})\" ^
-                            /v:\"${env.BUILD_NUMBER}\" ^
-                            /d:sonar.cs.opencover.reportsPaths=\"coverage-report\\Cobertura.xml\" ^
-                            /d:sonar.coverage.exclusions=\"**/bin/**,**/obj/**\"
-                        """
-                    }
-                }
+            withSonarQubeEnv('MySonarQube') {
+                // Step 1: Sonar Begin
+                bat """
+                \"${scannerHome}\\SonarScanner.MSBuild.exe\" begin ^
+                    /k:\"${env.Project_Name}_${env.BRANCH_NAME}\" ^
+                    /n:\"${env.Project_Name} (${env.BRANCH_NAME})\" ^
+                    /v:\"${env.BUILD_NUMBER}\" ^
+                    /d:sonar.cs.opencover.reportsPaths=\"**/coverage.opencover.xml\" ^
+                    /d:sonar.coverage.exclusions=\"**/*Migrations*/**\"
+                """
+
+                // Step 2: Build
+                bat "dotnet build ${env.SOLUTION_NAME} -c Release"
+
+                // Step 3: Test with Coverage
+                bat """
+                dotnet test ${env.TestProjectName} ^
+                    --logger trx ^
+                    /p:CollectCoverage=true ^
+                    /p:CoverletOutput=TestResults/coverage.opencover.xml ^
+                    /p:CoverletOutputFormat=opencover
+                """
+
+                // Step 4: Sonar End
+                bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
             }
         }
+    }
+}
+
 
         stage('Build') {
             steps {
-                echo "Building solution..."
-                bat "dotnet build ${env.SOLUTION_NAME} -c Release --no-restore"
+                echo "⚙️ Building .NET project..."
+                bat "dotnet build ${env.PROJECT_PATH} -c Release --no-restore"
             }
         }
 
-        stage('Test + Coverage') {
+        stage('Test') {
             steps {
-                echo "Running unit tests with coverage..."
-                bat """
-                    dotnet test ${env.SOLUTION_NAME} ^
-                    --configuration Release ^
-                    --no-build ^
-                    --collect \"XPlat Code Coverage\"
-                """
-            }
-        }
-
-        stage('Coverage Report') {
-            steps {
-                echo "Generating Cobertura coverage report..."
-                bat """
-                    \"${env.REPORTGEN}\" ^
-                        -reports:**/coverage.cobertura.xml ^
-                        -targetdir:coverage-report ^
-                        -reporttypes:Cobertura
-                """
-            }
-        }
-
-        stage('SonarQube End') {
-            steps {
-                script {
-                    def scannerHome = tool 'SonarScanner for MSBuild'
-                    withSonarQubeEnv('MySonarQube') {
-                        bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
-                    }
-                }
+                echo 'Testing...'
+                // Add your test commands here, for example:
+                // bat "dotnet test --no-build --verbosity normal"
             }
         }
 
@@ -99,8 +87,9 @@ pipeline {
                         -ProjectName \"${env.Project_Name}\" `
                         -BranchName \"${env.BRANCH_NAME}\" `
                         -BuildNumber \"${env.BUILD_NUMBER}\" `
-                        -NexusUrl \"${env.NEXUS_URL}\"
+                        -NexusUrl \"${env.NEXUS_URL}\" 
                     """
+                    
                 }
             }
         }

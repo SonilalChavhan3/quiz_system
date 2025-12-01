@@ -47,13 +47,14 @@ pipeline {
                 bat "dotnet build ${env.SOLUTION_NAME} -c Release"
 
                 // Step 3: Test with Coverage
-                bat """
-                dotnet test ${env.SOLUTION_NAME} ^
-                   --settings coverlet.runsettings --logger trx ^
-                    /p:CollectCoverage=true ^
-                    /p:CoverletOutput=TestResults/coverage.opencover.xml ^
-                    /p:CoverletOutputFormat=opencover
-                """
+               bat """
+    dotnet test ${env.SOLUTION_NAME} ^
+        --settings \"${WORKSPACE}\\coverlet.runsettings\" ^
+        --logger \"trx;LogFileName=TestResults.trx\" ^
+        /p:CollectCoverage=true ^
+        /p:CoverletOutput=\"${WORKSPACE}\\TestResults\\coverage.opencover.xml\" ^
+        /p:CoverletOutputFormat=opencover
+    """
 
                 // Step 4: Sonar End
                 bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"

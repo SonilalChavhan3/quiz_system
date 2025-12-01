@@ -49,7 +49,7 @@ pipeline {
                 // Step 3: Test with Coverage
                 bat """
                 dotnet test ${env.SOLUTION_NAME} ^
-                    --logger trx ^
+                   --settings coverlet.runsettings --logger trx ^
                     /p:CollectCoverage=true ^
                     /p:CoverletOutput=TestResults/coverage.opencover.xml ^
                     /p:CoverletOutputFormat=opencover

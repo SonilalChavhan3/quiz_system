@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quiz_system.Models;
@@ -46,12 +47,17 @@ namespace quiz_system.Controllers
         // Edit an existing section
         public IActionResult EditSection(int id)
         {
-            var section = _context.Sections.Find(id);
-            if (section == null)
+            if (id > 0)
             {
-                return NotFound();
+                var section = _context.Sections.Find(id);
+                if (section == null)
+                {
+                    return NotFound();
+                }
+                return View(section);
             }
-            return View(section);
+
+            return BadRequest();
         }
 
         [HttpPost]
